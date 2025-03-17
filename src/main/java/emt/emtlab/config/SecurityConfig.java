@@ -71,6 +71,7 @@ public class SecurityConfig {
         UserDetails simpleUser = User.builder()
                 .username("user")
                 .password(passwordEncoder.encode("user"))
+                .roles("USER")
                 .build();
 
         return new InMemoryUserDetailsManager(librarian, admin, simpleUser);

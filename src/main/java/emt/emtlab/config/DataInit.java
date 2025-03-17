@@ -1,12 +1,10 @@
 package emt.emtlab.config;
 
-import emt.emtlab.model.Author;
-import emt.emtlab.model.Book;
-import emt.emtlab.model.Category;
-import emt.emtlab.model.Country;
+import emt.emtlab.model.*;
 import emt.emtlab.repository.AuthorRepository;
 import emt.emtlab.repository.BookRepository;
 import emt.emtlab.repository.CountryRepository;
+import emt.emtlab.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +14,13 @@ public class DataInit {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final CountryRepository countryRepository;
+    private final UserRepository userRepository;
 
-    public DataInit(BookRepository bookRepository, AuthorRepository authorRepository, CountryRepository countryRepository) {
+    public DataInit(BookRepository bookRepository, AuthorRepository authorRepository, CountryRepository countryRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.countryRepository = countryRepository;
+        this.userRepository = userRepository;
     }
 
     @PostConstruct
@@ -45,9 +45,17 @@ public class DataInit {
         authorRepository.save(author2);
 
         // Create books with associated authors and enum category
-        Book book1 = new Book("Book One", Category.NOVEL, author1, 10, false);
-        Book book2 = new Book("Book Two", Category.THRILLER, author2, 5, false);
+        Book book1 = new Book("Book One", Category.NOVEL, author1, 10, false, false);
+        Book book2 = new Book("Book Two", Category.THRILLER, author2, 5, false, false);
 
+        User user = new User();
+        user.setUsername("Dario");
+
+        User user1 = new User();
+        user1.setUsername("Dare");
+
+        userRepository.save(user);
+        userRepository.save(user1);
         bookRepository.save(book1);
         bookRepository.save(book2);
     }

@@ -14,7 +14,8 @@ public class BookMapper {
                 book.getCategory(),
                 book.getAuthor() != null ? book.getAuthor().getId() : null,
                 book.getAvailableCopies(),
-                book.isRented()
+                book.isRented(),
+                book.isDeleted()
         );
     }
 }

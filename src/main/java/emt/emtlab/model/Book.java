@@ -18,15 +18,18 @@ public class Book {
     @ManyToOne
     private Author author;
 
+    private boolean deleted;
+
     public Book() {
     }
 
-    public Book(String name, Category category, Author author, int availableCopies, boolean rented) {
+    public Book(String name, Category category, Author author, int availableCopies, boolean rented, boolean deleted) {
         this.name = name;
         this.category = category;
         this.author = author;
         this.availableCopies = availableCopies;
         this.rented = rented;
+        this.deleted = deleted;
     }
 
     public Long getId() {
@@ -75,5 +78,13 @@ public class Book {
 
     public void setAuthor(Author author) {
         this.author = author;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

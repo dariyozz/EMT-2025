@@ -15,6 +15,7 @@ public record BookDto(
         Long authorId,
         @Min(value = 0, message = "Available copies must be non-negative")
         int availableCopies,
-        boolean rented
+        boolean rented,
+        boolean deleted
 ) {
 }
