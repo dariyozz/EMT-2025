@@ -1,7 +1,7 @@
 package emt.emtlab.mapper;
 
-import emt.emtlab.model.dto.AuthorDto;
-import emt.emtlab.model.Author;
+import emt.emtlab.services.application.dto.author.AuthorDto;
+import emt.emtlab.services.domain.model.Author;
 import org.springframework.stereotype.Component;
 
 @Component

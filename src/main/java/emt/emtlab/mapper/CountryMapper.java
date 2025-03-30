@@ -1,7 +1,7 @@
 package emt.emtlab.mapper;
 
-import emt.emtlab.model.dto.CountryDto;
-import emt.emtlab.model.Country;
+import emt.emtlab.services.application.dto.country.CountryDto;
+import emt.emtlab.services.domain.model.Country;
 import org.springframework.stereotype.Component;
 
 @Component

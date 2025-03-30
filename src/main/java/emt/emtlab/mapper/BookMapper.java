@@ -1,7 +1,7 @@
 package emt.emtlab.mapper;
 
-import emt.emtlab.model.dto.BookDto;
-import emt.emtlab.model.Book;
+import emt.emtlab.services.application.dto.book.BookDto;
+import emt.emtlab.services.domain.model.Book;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,4 +18,6 @@ public class BookMapper {
                 book.isDeleted()
         );
     }
+
+
 }

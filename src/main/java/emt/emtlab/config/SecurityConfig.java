@@ -3,6 +3,8 @@ package emt.emtlab.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,9 +21,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
+    private final CustomAuthenticationManager customAuthenticationManager;
 
-    public SecurityConfig(PasswordEncoder passwordEncoder) {
+    public SecurityConfig(PasswordEncoder passwordEncoder, CustomAuthenticationManager customAuthenticationManager) {
         this.passwordEncoder = passwordEncoder;
+        this.customAuthenticationManager = customAuthenticationManager;
     }
 
     @Bean
@@ -33,18 +37,21 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/api-docs*/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/books", "api/books/categories").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books/{id}").permitAll()
                         .requestMatchers("/api/books/**").hasRole("LIBRARIAN")
+                        .requestMatchers("/api/wishlist/**").hasAnyRole("USER", "LIBRARIAN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginProcessingUrl("/api/auth/login")
                         .permitAll()
-                        .failureUrl("/login?error=BadCredentials")
+                        .failureUrl("/api/auth/login-failure")
                         .defaultSuccessUrl("/api/books", true)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/auth/logout")
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
@@ -55,6 +62,15 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(
+                AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(customAuthenticationManager);
+        return authenticationManagerBuilder.build();
+    }
+
+
+    //@Bean
     public UserDetailsService userDetailsService() {
         UserDetails librarian = User.builder()
                 .username("lib")

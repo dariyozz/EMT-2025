@@ -1,10 +1,10 @@
 package emt.emtlab.config;
 
-import emt.emtlab.model.*;
-import emt.emtlab.repository.AuthorRepository;
-import emt.emtlab.repository.BookRepository;
-import emt.emtlab.repository.CountryRepository;
-import emt.emtlab.repository.UserRepository;
+import emt.emtlab.services.domain.model.*;
+import emt.emtlab.services.domain.repository.AuthorRepository;
+import emt.emtlab.services.domain.repository.BookRepository;
+import emt.emtlab.services.domain.repository.CountryRepository;
+import emt.emtlab.services.domain.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
@@ -48,14 +48,6 @@ public class DataInit {
         Book book1 = new Book("Book One", Category.NOVEL, author1, 10, false, false);
         Book book2 = new Book("Book Two", Category.THRILLER, author2, 5, false, false);
 
-        User user = new User();
-        user.setUsername("Dario");
-
-        User user1 = new User();
-        user1.setUsername("Dare");
-
-        userRepository.save(user);
-        userRepository.save(user1);
         bookRepository.save(book1);
         bookRepository.save(book2);
     }

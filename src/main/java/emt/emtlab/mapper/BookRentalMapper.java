@@ -1,7 +1,7 @@
 package emt.emtlab.mapper;
 
-import emt.emtlab.model.BookRental;
-import emt.emtlab.model.dto.BookRentalDto;
+import emt.emtlab.services.domain.model.BookRental;
+import emt.emtlab.services.application.dto.book.BookRentalDto;
 import org.springframework.stereotype.Component;
 
 @Component
