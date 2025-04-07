@@ -36,7 +36,7 @@ public class User implements UserDetails {
     private String lastName;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    private Set<Role> role = Set.of(Role.ROLE_USER);
+    private Set<Role> role = Set.of(Role.USER);
 
     private boolean accountNonExpired = true;
     private boolean accountNonLocked = true;

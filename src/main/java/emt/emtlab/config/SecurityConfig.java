@@ -38,10 +38,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/api-docs*/**").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/login-user").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books/{id}").permitAll()
-                        .requestMatchers("/api/books/**").hasRole("LIBRARIAN")
-                        .requestMatchers("/api/wishlist/**").hasAnyRole("USER", "LIBRARIAN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

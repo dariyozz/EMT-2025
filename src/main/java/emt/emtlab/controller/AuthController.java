@@ -10,12 +10,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -45,7 +48,7 @@ public class AuthController {
                     description = "User authenticated successfully"
             ), @ApiResponse(responseCode = "404", description = "Invalid username or password")}
     )
-    @PostMapping("/login")
+    @PostMapping("/login-user")
     public ResponseEntity<DisplayUserDto> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         try {
             DisplayUserDto displayUserDto = authService.login(
@@ -61,9 +64,12 @@ public class AuthController {
 
     @Operation(summary = "User logout", description = "Ends the user's session")
     @ApiResponse(responseCode = "200", description = "User logged out successfully")
-    @GetMapping("/logout")
-    public void logout(HttpServletRequest request) {
+    @GetMapping("/logout-user")
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+        response.sendRedirect("/login");
+
     }
 
 

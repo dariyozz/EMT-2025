@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Wishlist {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne

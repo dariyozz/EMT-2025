@@ -52,7 +52,7 @@ public class UserDomainServiceImpl implements UserDomainService {
         if (!password.equals(repeatPassword)) throw new PasswordsDoNotMatchException();
         if (userRepository.findByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException(username);
-        User user = new User(username, email,passwordEncoder.encode(password), firstName, lastName, role);
+        User user = new User(username, email, passwordEncoder.encode(password), firstName, lastName, role);
         return userRepository.save(user);
     }
 
@@ -61,8 +61,11 @@ public class UserDomainServiceImpl implements UserDomainService {
         if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
             throw new InvalidUsernameOrPasswordException();
         }
-        return userRepository.findByUsernameAndPassword(username, password).orElseThrow(
-                InvalidUsernameOrPasswordException::new);
+        if (!passwordEncoder.matches(password, userRepository.findByUsername(username)
+                .orElseThrow(InvalidUsernameOrPasswordException::new).getPassword())) {
+            throw new InvalidUsernameOrPasswordException();
+        }
+        return userRepository.findByUsername(username).get();
     }
 
 }
