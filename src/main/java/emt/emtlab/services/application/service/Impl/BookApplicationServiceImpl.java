@@ -135,4 +135,11 @@ public class BookApplicationServiceImpl implements BookApplicationService {
                 .map(BookDto::from)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<BookDto> findRecentBooks() {
+        return bookDomainService.findRecentBooks().stream()
+                .map(BookDto::from)
+                .collect(Collectors.toList());
+    }
 }

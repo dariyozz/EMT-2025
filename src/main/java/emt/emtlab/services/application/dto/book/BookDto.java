@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 
 public record BookDto(
         Long id,
@@ -19,28 +21,30 @@ public record BookDto(
         @Min(value = 0, message = "Available copies must be non-negative")
         int availableCopies,
         boolean rented,
-        boolean deleted
+        boolean deleted,
+        LocalDateTime createdAt
 ) {
-        public static BookDto from(Book book){
-                return new BookDto(
-                        book.getId(),
-                        book.getName(),
-                        book.getCategory(),
-                        book.getAuthor().getId(),
-                        book.getAvailableCopies(),
-                        book.isRented(),
-                        book.isDeleted()
-                );
-        }
+    public static BookDto from(Book book) {
+        return new BookDto(
+                book.getId(),
+                book.getName(),
+                book.getCategory(),
+                book.getAuthor().getId(),
+                book.getAvailableCopies(),
+                book.isRented(),
+                book.isDeleted(),
+                book.getCreatedAt()
+        );
+    }
 
 
-        public Book toBook(Book book, Author author) {
-                book.setName(name);
-                book.setCategory(category);
-                book.setAuthor(author);
-                book.setAvailableCopies(availableCopies);
-                book.setRented(rented);
-                book.setDeleted(deleted);
-                return book;
-        }
+    public Book toBook(Book book, Author author) {
+        book.setName(name);
+        book.setCategory(category);
+        book.setAuthor(author);
+        book.setAvailableCopies(availableCopies);
+        book.setRented(rented);
+        book.setDeleted(deleted);
+        return book;
+    }
 }

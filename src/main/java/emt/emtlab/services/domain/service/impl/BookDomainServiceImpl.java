@@ -21,7 +21,7 @@ public class BookDomainServiceImpl implements BookDomainService {
     private final BookRentalRepository bookRentalRepository;
 
     public BookDomainServiceImpl(BookRepository bookRepository,
-                                BookRentalRepository bookRentalRepository) {
+                                 BookRentalRepository bookRentalRepository) {
         this.bookRepository = bookRepository;
         this.bookRentalRepository = bookRentalRepository;
     }
@@ -65,12 +65,6 @@ public class BookDomainServiceImpl implements BookDomainService {
 
     @Override
     public Optional<Book> markAsRented(Book book, User user) {
-        Optional<BookRental> existingRental = bookRentalRepository.findByBookAndReturnDateIsNull(book);
-
-        if (existingRental.isPresent()) {
-            throw new IllegalStateException("Book is already rented");
-        }
-
         if (book.getAvailableCopies() > 0) {
             book.setAvailableCopies(book.getAvailableCopies() - 1);
             if (book.getAvailableCopies() == 0) {
@@ -133,6 +127,11 @@ public class BookDomainServiceImpl implements BookDomainService {
         }
 
         throw new IllegalStateException("Book is not rented");
+    }
+
+    @Override
+    public List<Book> findRecentBooks() {
+        return bookRepository.findTop10ByDeletedFalseOrderByCreatedAtDesc();
     }
 
 

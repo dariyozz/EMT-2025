@@ -21,4 +21,5 @@ import java.util.Optional;
         List<Book> filterBooks(String name, Long authorId, Category category);
 
         Optional<Book> markAsReturned(Book book);
+        List<Book> findRecentBooks();
     }

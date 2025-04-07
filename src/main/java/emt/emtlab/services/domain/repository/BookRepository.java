@@ -20,4 +20,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findBooksByFilters(@Param("name") String name,
                                   @Param("authorId") Long authorId,
                                   @Param("category") Category category);
+
+
+//    @Query(value = "SELECT * FROM book b WHERE b.deleted = false ORDER BY b.createdAt DESC LIMIT :limit",
+//            nativeQuery = true)
+//    List<Book> findRecentBooks(@Param("limit") int limit);
+    List<Book> findTop10ByDeletedFalseOrderByCreatedAtDesc();
 }

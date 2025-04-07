@@ -2,6 +2,8 @@ package emt.emtlab.services.domain.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Book {
     @Id
@@ -20,16 +22,27 @@ public class Book {
 
     private boolean deleted;
 
+    private LocalDateTime createdAt;
+
     public Book() {
     }
 
-    public Book(String name, Category category, Author author, int availableCopies, boolean rented, boolean deleted) {
+    public Book(String name, Category category, Author author, int availableCopies, boolean rented, boolean deleted, LocalDateTime createdAt) {
         this.name = name;
         this.category = category;
         this.author = author;
         this.availableCopies = availableCopies;
         this.rented = rented;
         this.deleted = deleted;
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Long getId() {

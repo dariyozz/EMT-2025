@@ -18,4 +18,6 @@ public interface BookApplicationService {
     List<BookRentalDto> getUserRentals(Long userId);
     List<Category> getAllCategories();
     List<BookDto> filterBooks(String name, Long authorId, String category);
+
+    List<BookDto> findRecentBooks();
 }

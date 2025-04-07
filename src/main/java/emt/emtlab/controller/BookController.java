@@ -1,5 +1,6 @@
 package emt.emtlab.controller;
 
+import emt.emtlab.utils.SecurityUtils;
 import emt.emtlab.services.domain.model.Category;
 import emt.emtlab.services.application.dto.book.BookDto;
 import emt.emtlab.services.application.dto.book.BookRentalDto;
@@ -18,13 +19,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 @Tag(name = "Book Operations", description = "API for managing books in the library")
-//@CrossOrigin(origins = "*")
 public class BookController {
 
     private final BookApplicationService bookService;
+    private final SecurityUtils securityUtils;
 
-    public BookController(BookApplicationService bookService) {
+    public BookController(BookApplicationService bookService, SecurityUtils securityUtils) {
         this.bookService = bookService;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping
@@ -52,6 +54,13 @@ public class BookController {
         return ResponseEntity.ok(filteredBooks);
     }
 
+    @GetMapping("/recent")
+    @Operation(summary = "Get recent books", description = "Returns the 10 most recently added books")
+    public ResponseEntity<List<BookDto>> getRecentBooks() {
+        List<BookDto> recentBooks = bookService.findRecentBooks();
+        return ResponseEntity.ok(recentBooks);
+    }
+
     @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN'})")
     @PostMapping
     @Operation(summary = "Create a new book", description = "Creates a new book in the library")
@@ -64,7 +73,6 @@ public class BookController {
                 .toUri();
         return ResponseEntity.created(location).body(createdBook);
     }
-
 
     @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN'})")
     @PutMapping("/{id}")
@@ -89,20 +97,22 @@ public class BookController {
         return bookService.getAllCategories();
     }
 
-    @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN'})")
-    @PostMapping("/{id}/rent/{userId}")
-    @Operation(summary = "Rent book", description = "Marks a book as rented by a specific user")
-    public ResponseEntity<BookDto> rentBook(@PathVariable Long id, @PathVariable Long userId) {
-        return bookService.markAsRented(id, userId)
+    @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN','USER'})")
+    @PostMapping("/{id}/rent")
+    @Operation(summary = "Rent book", description = "Marks a book as rented by the current user")
+    public ResponseEntity<BookDto> rentBook(@PathVariable Long id) {
+        Long currentUserId = securityUtils.getCurrentUser().getId();
+        return bookService.markAsRented(id, currentUserId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN'})")
-    @PostMapping("/{id}/return/{userId}")
-    @Operation(summary = "Return book", description = "Marks a book as returned by a specific user")
-    public ResponseEntity<BookDto> returnBook(@PathVariable Long id, @PathVariable Long userId) {
-        return bookService.returnBook(id, userId)
+    @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN','USER'})")
+    @PostMapping("/{id}/return")
+    @Operation(summary = "Return book", description = "Marks a book as returned by the current user")
+    public ResponseEntity<BookDto> returnBook(@PathVariable Long id) {
+        Long currentUserId = securityUtils.getCurrentUser().getId();
+        return bookService.returnBook(id, currentUserId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -115,9 +125,19 @@ public class BookController {
         return ResponseEntity.ok(rentals);
     }
 
-    @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN', 'USER'})")
+    @PreAuthorize("hasAnyRole({'LIBRARIAN','ADMIN','USER'})")
+    @GetMapping("/rentals/user")
+    @Operation(summary = "Get current user rentals", description = "Returns a list of all rentals for the current user")
+    public ResponseEntity<List<BookRentalDto>> getCurrentUserRentals() {
+        Long currentUserId = securityUtils.getCurrentUser().getId();
+        List<BookRentalDto> rentals = bookService.getUserRentals(currentUserId);
+        return ResponseEntity.ok(rentals);
+    }
+
+    // Admin-only endpoint to view a specific user's rentals
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/rentals/user/{userId}")
-    @Operation(summary = "Get user rentals", description = "Returns a list of all rentals for a specific user")
+    @Operation(summary = "Get user rentals (admin only)", description = "Returns a list of all rentals for a specific user")
     public ResponseEntity<List<BookRentalDto>> getUserRentals(@PathVariable Long userId) {
         List<BookRentalDto> rentals = bookService.getUserRentals(userId);
         return ResponseEntity.ok(rentals);
