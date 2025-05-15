@@ -14,4 +14,11 @@ public class CountryMapper {
                 country.getContinent()
         );
     }
+
+    public Country toEntity(CountryDto countryDto) {
+        return new Country(
+                countryDto.name(),
+                countryDto.continent()
+        );
+    }
 }

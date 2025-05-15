@@ -1,5 +1,6 @@
 package emt.emtlab.services.domain.service.impl;
 
+import emt.emtlab.services.application.dto.book.BookDto;
 import emt.emtlab.services.domain.model.Book;
 import emt.emtlab.services.domain.model.BookRental;
 import emt.emtlab.services.domain.model.Category;
@@ -44,15 +45,12 @@ public class BookDomainServiceImpl implements BookDomainService {
     }
 
     @Override
-    public Optional<Book> update(Long id, Book updatedBook) {
-        return bookRepository.findById(id).map(existingBook -> {
-            existingBook.setName(updatedBook.getName());
-            existingBook.setCategory(updatedBook.getCategory());
-            existingBook.setAuthor(updatedBook.getAuthor());
-            existingBook.setAvailableCopies(updatedBook.getAvailableCopies());
-            existingBook.setRented(updatedBook.isRented());
-            return bookRepository.save(existingBook);
-        });
+    public Optional<Book> update(Book updatedBook, BookDto bookDto) {
+        updatedBook.setName(bookDto.getName());
+        updatedBook.setCategory(bookDto.getCategory());
+        updatedBook.setAvailableCopies(bookDto.getAvailableCopies());
+        updatedBook.setRented(bookDto.isRented());
+        return Optional.of(bookRepository.save(updatedBook));
     }
 
     @Override

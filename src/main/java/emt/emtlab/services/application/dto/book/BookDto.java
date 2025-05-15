@@ -6,22 +6,31 @@ import emt.emtlab.services.domain.model.Category;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 
 public record BookDto(
+        @Getter
         Long id,
         @NotBlank(message = "Book name cannot be blank")
+        @Getter
         String name,
         @NotNull(message = "Category is required")
+        @Getter
         Category category,
         @NotNull(message = "Author is required")
+        @Getter
         Long authorId,
         @Min(value = 0, message = "Available copies must be non-negative")
+        @Getter
         int availableCopies,
+        @Getter
         boolean rented,
+        @Getter
         boolean deleted,
+        @Getter
         LocalDateTime createdAt
 ) {
     public static BookDto from(Book book) {
@@ -47,4 +56,6 @@ public record BookDto(
         book.setDeleted(deleted);
         return book;
     }
+
+
 }

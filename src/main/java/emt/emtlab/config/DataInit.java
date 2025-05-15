@@ -8,7 +8,6 @@ import emt.emtlab.services.domain.repository.AuthorRepository;
 import emt.emtlab.services.domain.repository.BookRepository;
 import emt.emtlab.services.domain.repository.CountryRepository;
 import emt.emtlab.services.domain.repository.UserRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -29,7 +28,7 @@ public class DataInit {
         this.userRepository = userRepository;
     }
 
-    @PostConstruct
+   // @PostConstruct
     private void init() {
         // Create and save a country
         if (userRepository.findAll().isEmpty()) {

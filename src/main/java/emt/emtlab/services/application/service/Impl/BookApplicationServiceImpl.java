@@ -68,7 +68,7 @@ public class BookApplicationServiceImpl implements BookApplicationService {
 
         updatedBook.setAuthor(author);
 
-        return bookDomainService.update(id, updatedBook).map(BookDto::from);
+        return bookDomainService.update(updatedBook,bookDto).map(BookDto::from);
     }
 
     @Override

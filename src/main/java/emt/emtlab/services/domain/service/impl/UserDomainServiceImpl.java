@@ -3,8 +3,10 @@ package emt.emtlab.services.domain.service.impl;
 import emt.emtlab.exceptions.InvalidUsernameOrPasswordException;
 import emt.emtlab.exceptions.PasswordsDoNotMatchException;
 import emt.emtlab.exceptions.UsernameAlreadyExistsException;
+import emt.emtlab.services.domain.model.RoleEntity;
 import emt.emtlab.services.domain.model.User;
 import emt.emtlab.services.domain.model.enums.Role;
+import emt.emtlab.services.domain.repository.RoleRepository;
 import emt.emtlab.services.domain.repository.UserRepository;
 import emt.emtlab.services.domain.service.UserDomainService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,16 +15,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDomainServiceImpl implements UserDomainService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
-    public UserDomainServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+
+    public UserDomainServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -45,14 +51,29 @@ public class UserDomainServiceImpl implements UserDomainService {
 
     @Override
     public User register(
-            String username, String email, String password, String repeatPassword, String firstName, String lastName, Set<Role> role
+            String username, String email, String password, String repeatPassword, String firstName, String lastName, Set<Role> roles
     ) {
         if (username == null || username.isEmpty() || password == null || password.isEmpty())
             throw new InvalidUsernameOrPasswordException();
         if (!password.equals(repeatPassword)) throw new PasswordsDoNotMatchException();
         if (userRepository.findByUsername(username).isPresent())
             throw new UsernameAlreadyExistsException(username);
-        User user = new User(username, email, passwordEncoder.encode(password), firstName, lastName, role);
+        User user = new User(username, email, passwordEncoder.encode(password), firstName, lastName);
+
+        // Convert Role enums to RoleEntity objects and set them to the user
+        if (roles != null && !roles.isEmpty()) {
+            Set<RoleEntity> roleEntities = roles.stream()
+                    .map(role -> roleRepository.findByRoleName(role)
+                            .orElseGet(() -> roleRepository.save(new RoleEntity(role))))
+                    .collect(Collectors.toSet());
+            user.setRoleEntities(roleEntities);
+        } else {
+            // Set default role if no roles provided
+            RoleEntity defaultRole = roleRepository.findByRoleName(Role.USER)
+                    .orElseGet(() -> roleRepository.save(new RoleEntity(Role.USER)));
+            user.setRoleEntities(Set.of(defaultRole));
+        }
+
         return userRepository.save(user);
     }
 

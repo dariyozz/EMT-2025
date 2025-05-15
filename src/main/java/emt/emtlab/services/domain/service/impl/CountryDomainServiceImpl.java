@@ -1,5 +1,6 @@
 package emt.emtlab.services.domain.service.impl;
 
+import emt.emtlab.services.application.dto.country.CountryDto;
 import emt.emtlab.services.domain.model.Country;
 import emt.emtlab.services.domain.repository.CountryRepository;
 import emt.emtlab.services.domain.service.CountryDomainService;
@@ -33,13 +34,10 @@ public class CountryDomainServiceImpl implements CountryDomainService {
     }
 
     @Override
-    public Optional<Country> update(Long id, Country countryDetails) {
-        return countryRepository.findById(id)
-                .map(country -> {
-                    country.setName(countryDetails.getName());
-                    country.setContinent(countryDetails.getContinent());
-                    return countryRepository.save(country);
-                });
+    public Optional<Country> update(Country countryDetails, CountryDto countryDto) {
+        countryDetails.setName(countryDto.getName());
+        countryDetails.setContinent(countryDto.getContinent());
+        return Optional.of(countryRepository.save(countryDetails));
     }
 
     @Override

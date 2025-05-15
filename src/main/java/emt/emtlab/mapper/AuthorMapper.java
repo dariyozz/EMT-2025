@@ -15,4 +15,11 @@ public class AuthorMapper {
                 author.getCountry() != null ? author.getCountry().getId() : null
         );
     }
+
+    public Author toEntity(AuthorDto authorDto) {
+        return new Author(
+                authorDto.name(),
+                authorDto.surname()
+        );
+    }
 }

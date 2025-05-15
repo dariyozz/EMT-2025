@@ -1,5 +1,6 @@
 package emt.emtlab.services.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import emt.emtlab.services.domain.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -35,8 +37,14 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    private Set<Role> role = Set.of(Role.USER);
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<RoleEntity> roleEntities;
 
     private boolean accountNonExpired = true;
     private boolean accountNonLocked = true;
@@ -46,33 +54,40 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String email, String password, String firstName, String lastName, Set<Role> role) {
+    public User(String username, String email, String password, String firstName, String lastName) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.role = role;
     }
 
     public User(String username, String name, String surname, Set<Role> roles) {
         this.username = username;
         this.firstName = name;
         this.lastName = surname;
-        this.role = roles;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 
     @Override
     public String getUsername() {
         return username;
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        role.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.name())));
+        if (roleEntities != null) {
+            roleEntities.forEach(role ->
+                    authorities.add(new SimpleGrantedAuthority(role.getRoleName().name())));
+        }
         return authorities;
     }
 
@@ -94,5 +109,13 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public void addRole(RoleEntity roleEntity) {
+        if (roleEntities == null) {
+            roleEntities = Set.of(roleEntity);
+        } else {
+            roleEntities.add(roleEntity);
+        }
     }
 }
